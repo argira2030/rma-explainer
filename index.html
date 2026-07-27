@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARGIRA ↔ RMA · Cómo explicar el proyecto</title>
+<style>
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: local('IBM Plex Sans');
+}
+
+:root{
+  --paper: #F7F5F1;
+  --paper-2: #FCFBF8;
+  --card: #EDE8E0;
+  --ink: #241F1A;
+  --ink-soft: #55504A;
+  --rule: #DAD4C6;
+  --evidence: #2C4F45;
+  --evidence-bg: #E2F1E8;
+  --evidence-border: #B9DDC7;
+  --research: #6B5330;
+  --research-bg: #FBF3E3;
+  --research-border: #E8D08F;
+  --residual: #8C3A2E;
+  --residual-bg: #F5E1DC;
+  --residual-border: #E3B6AA;
+  --signal: #2C4F45;
+}
+
+*{ box-sizing: border-box; }
+
+html{ scroll-behavior: smooth; }
+/* === PRUEBA TEMPORAL DE AISLAMIENTO — eliminar tras el diagnóstico === */
+html{ scroll-behavior: auto !important; }
+/* === FIN PRUEBA TEMPORAL === */
+
+body{
+  margin:0;
+  font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,h2,h3,h4{
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+code, .mono{
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+a{ color: var(--evidence); }
+
+/* ---------- top identity bar ---------- */
+
+.masthead{
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-2);
+  position: sticky;
+  top:0;
+  z-index: 50;
+}
+
+.masthead-inner{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand-mark{ width: 34px; height: 34px; flex-shrink:0; }
+
+.brand-text{ line-height:1.15; }
+
+.brand-text .name{
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 17px;
+  color: var(--ink);
+}
+
+.brand-text .sub{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ---------- tabs ---------- */
+
+.tabbar{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display:flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabbar::-webkit-scrollbar{ display:none; }
+
+.tab-btn{
+  appearance:none;
+  border:none;
+  background:none;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+  padding: 10px 12px 12px;
+  cursor:pointer;
+  white-space:nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color .15s ease, border-color .15s ease;
+}
+.tab-btn:hover{ color: var(--ink); }
+.tab-btn.active{
+  color: var(--ink);
+  border-bottom-color: var(--signal);
+  font-weight: 600;
+}
+.tab-btn .tnum{ opacity:.5; margin-right:6px; }
+
+/* ---------- hero ---------- */
+
+.hero{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 56px 24px 40px;
+  display:grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 40px;
+  align-items:center;
+}
+
+@media (max-width: 760px){
+  .hero{ grid-template-columns: 1fr; padding-top: 36px; gap: 28px; }
+}
+
+.hero h1{
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.15;
+  margin: 0 0 18px;
+}
+
+.hero .lede{
+  font-size: 16px;
+  color: var(--ink-soft);
+  max-width: 46ch;
+}
+
+.hero-diagram{
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 18px 16px 14px;
+}
+
+.hero-diagram figcaption{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  margin-top: 10px;
+  text-align:center;
+}
+
+/* ---------- content shell ---------- */
+
+.view{ max-width: 980px; margin: 0 auto; padding: 8px 24px 90px; }
+.view[hidden]{ display:none; }
+
+.eyebrow{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 8px;
+}
+
+section.block{ margin: 44px 0; }
+section.block:first-child{ margin-top: 8px; }
+
+h2.block-title{ font-size: 24px; margin: 0 0 6px; }
+h3.sub-title{ font-size: 18px; margin: 28px 0 10px; }
+
+p{ margin: 0 0 14px; color: var(--ink); }
+.dim{ color: var(--ink-soft); }
+
+blockquote.q{
+  margin: 20px 0;
+  padding: 14px 18px;
+  border-left: 3px solid var(--signal);
+  background: var(--paper-2);
+  font-family:'Newsreader', Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  color: var(--ink);
+}
+
+.pipeline{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 13px;
+  background: var(--card);
+  border-radius: 4px;
+  padding: 14px 16px;
+  white-space: pre;
+  overflow-x:auto;
+  color: var(--ink);
+  line-height: 1.7;
+}
+
+ul.plain{ padding-left: 20px; margin: 0 0 14px; }
+ul.plain li{ margin-bottom: 4px; }
+
+/* image placeholder */
+figure.shot{
+  margin: 20px 0;
+  border: 1.5px dashed var(--rule);
+  background: var(--paper-2);
+  border-radius: 4px;
+  padding: 26px 20px;
+  text-align:center;
+}
+figure.shot .shot-icon{
+  width: 30px; height:30px; margin: 0 auto 10px;
+  opacity: .55;
+}
+figure.shot figcaption{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+figure.shot figcaption b{ color: var(--ink); font-weight:600; }
+figure.shot .shot-desc{
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-top: 6px;
+  max-width: 52ch;
+  margin-left:auto; margin-right:auto;
+}
+
+/* badges reused from explorer vocabulary */
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.badge.evidence{ color: var(--evidence); background: var(--evidence-bg); border-color: var(--evidence-border); }
+.badge.research{ color: var(--research); background: var(--research-bg); border-color: var(--research-border); }
+.badge.residual{ color: var(--residual); background: var(--residual-bg); border-color: var(--residual-border); }
+
+/* three-layer cards */
+.layer-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+@media (max-width:760px){ .layer-grid{ grid-template-columns: 1fr; } }
+
+.layer-card{
+  border: 1px solid var(--rule);
+  background: var(--paper-2);
+  border-radius: 4px;
+  padding: 16px;
+}
+.layer-card h4{ font-size:15px; margin: 8px 0 6px; }
+.layer-card p{ font-size: 13.5px; margin:0; color: var(--ink-soft); }
+
+/* level cards for the four audiences */
+.levels{
+  display:grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 10px;
+  margin: 18px 0;
+}
+@media (max-width: 900px){ .levels{ grid-template-columns: repeat(2,1fr);} }
+@media (max-width: 520px){ .levels{ grid-template-columns: 1fr;} }
+.level-card{
+  border:1px solid var(--rule);
+  background: var(--paper-2);
+  border-radius:4px;
+  padding: 12px 14px;
+  cursor:pointer;
+  transition: border-color .15s ease, transform .1s ease;
+}
+.level-card:hover{ border-color: var(--signal); transform: translateY(-1px); }
+.level-card .lvl-num{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 10.5px; color: var(--ink-soft);
+}
+.level-card .lvl-name{ font-size: 13.5px; font-weight:600; margin-top:2px; }
+
+/* nav rail for guide tab */
+.guide-nav{
+  display:flex; flex-wrap:wrap; gap:6px;
+  margin: 8px 0 24px;
+}
+.guide-nav a{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11px;
+  text-decoration:none;
+  color: var(--ink-soft);
+  border:1px solid var(--rule);
+  background: var(--paper-2);
+  padding: 5px 10px;
+  border-radius: 3px;
+}
+.guide-nav a:hover{ color: var(--ink); border-color: var(--signal); }
+
+.step-flow{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  background: var(--card);
+  border-radius:4px;
+  padding: 12px 14px;
+  margin: 14px 0;
+  line-height:1.9;
+}
+
+table.meta{
+  width:100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 14px 0;
+}
+table.meta th, table.meta td{
+  text-align:left;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--rule);
+}
+table.meta th{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing:.04em;
+  color: var(--ink-soft);
+}
+
+.divider{ height:1px; background: var(--rule); margin: 36px 0; border:none; }
+
+.note{
+  font-size: 13px;
+  color: var(--ink-soft);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--research);
+  padding: 12px 14px;
+  border-radius: 3px;
+  margin: 18px 0;
+}
+.note b{ color: var(--research); }
+
+.formula{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 14px;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 10px 14px;
+  display:inline-block;
+  margin: 6px 0 16px;
+}
+
+footer.foot{
+  border-top: 1px solid var(--rule);
+  padding: 26px 24px 60px;
+  max-width: 980px;
+  margin: 0 auto;
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-soft);
+  display:flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  .level-card{ transition:none; }
+}
+
+/* ---------- language toggle ---------- */
+.lang-toggle{
+  display:flex;
+  align-items:center;
+  border:1px solid var(--rule);
+  border-radius: 4px;
+  overflow:hidden;
+  flex-shrink:0;
+}
+.lang-btn{
+  appearance:none;
+  border:none;
+  background: var(--paper-2);
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--ink-soft);
+  padding: 7px 11px;
+  cursor:pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.lang-btn + .lang-btn{ border-left: 1px solid var(--rule); }
+.lang-btn.active{
+  background: var(--signal);
+  color: #fff;
+  font-weight:600;
+}
+.lang-btn:hover:not(.active){ color: var(--ink); }
+
+/* ---------- disabled tab ---------- */
+.tab-btn.disabled{
+  opacity: .4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.tab-btn.disabled .tnum{ opacity:.5; }
+
+/* ---------- speak / TTS button ---------- */
+.speak-btn{
+  appearance:none;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border:1px solid var(--rule);
+  background: var(--paper-2);
+  color: var(--ink-soft);
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .02em;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor:pointer;
+  margin: 0 0 14px;
+  transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+.speak-btn:hover{ color: var(--ink); border-color: var(--signal); }
+.speak-btn.speaking{
+  color: var(--evidence);
+  background: var(--evidence-bg);
+  border-color: var(--evidence-border);
+}
+.speak-btn .ico{ width:12px; height:12px; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 34 34" fill="none">
+        <path d="M2 22 C6 22, 6 8, 10 8 S14 22, 18 22 S22 8, 26 8 S30 22, 32 22"
+              stroke="#2C4F45" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <path d="M2 26 C6 26, 6 24, 10 24 S14 27, 18 25 S22 23, 26 25 S30 26, 32 26"
+              stroke="#8C3A2E" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.75"/>
+      </svg>
+      <div class="brand-text">
+        <div class="name">ARGIRA ↔ RMA</div>
+        <div class="sub" data-i18n="brandSub">Cómo explicar el proyecto</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span class="badge evidence">ICAD 2026 · ESMUC</span>
+      <div class="lang-toggle" id="langToggle">
+        <button class="lang-btn active" data-lang="es" title="Español">ES</button>
+        <button class="lang-btn" data-lang="en" title="English">EN</button>
+      </div>
+    </div>
+  </div>
+  <nav class="tabbar" id="tabbar">
+    <button class="tab-btn active" data-view="v-resumen"><span class="tnum">00</span><span data-i18n="tab00">General</span></button>
+    <button class="tab-btn" data-view="v-2min"><span class="tnum">01</span><span data-i18n="tab01">2 min</span></button>
+    <button class="tab-btn" data-view="v-10min"><span class="tnum">02</span><span data-i18n="tab02">10 min</span></button>
+    <button class="tab-btn" data-view="v-tecnica"><span class="tnum">03</span><span data-i18n="tab03">Técnica</span></button>
+    <button class="tab-btn" data-view="v-mapa"><span class="tnum">04</span><span data-i18n="tab04">Mapa maestro</span></button>
+    <button class="tab-btn disabled" data-view="v-guia" title="En construcción — contenido pendiente" aria-disabled="true"><span class="tnum">05</span><span data-i18n="tab05">Guía Explorer</span></button>
+  </nav>
+</div>
+
+<header class="hero">
+  <div>
+    <p class="eyebrow" data-i18n="heroEyebrow">Un instrumento, no una landing</p>
+    <h1 data-i18n="heroTitle">Qué sobrevive cuando una pintura se convierte en sonido</h1>
+    <p class="lede" data-i18n="heroLede">Seis maneras de contar el mismo proyecto — desde una frase para quien no sabe nada, hasta la arquitectura formal para un revisor de ICAD. Todas describen la misma idea central: pasar de una caja negra a un proceso auditable.</p>
+  </div>
+  <figure class="hero-diagram">
+    <svg viewBox="0 0 320 140" width="100%" height="140">
+      <line x1="0" y1="70" x2="320" y2="70" stroke="#DAD4C6" stroke-width="1"/>
+      <path d="M0 70 C 20 20, 40 120, 60 70 S 100 20, 120 70 S 160 120, 180 70 S 220 20, 240 70 S 280 120, 300 70 L320 70"
+            stroke="#241F1A" stroke-width="1.8" fill="none"/>
+      <path d="M0 92 C 20 82, 40 100, 60 92 S 100 84, 120 92 S 160 100, 180 90 S 220 82, 240 92 S 280 100, 300 90 L320 90"
+            stroke="#2C4F45" stroke-width="1.6" fill="none" stroke-dasharray="1 0" opacity="0.9"/>
+      <path d="M0 104 C 20 108, 40 100, 60 105 S 100 110, 120 104 S 160 99, 180 106 S 220 111, 240 105 S 280 100, 300 106 L320 104"
+            stroke="#8C3A2E" stroke-width="1.4" fill="none" opacity="0.85"/>
+      <text x="4" y="16" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#55504A">SEÑAL OBSERVADA (Y)</text>
+      <text x="4" y="132" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#2C4F45">MODELO g(X)</text>
+      <text x="220" y="132" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#8C3A2E">RESIDUO R</text>
+    </svg>
+    <figcaption data-i18n="heroFigcaption">Y = g(X) + R — RMA audita si R todavía contiene estructura</figcaption>
+  </figure>
+</header>
+
+<!-- ================= VIEW 00 : EXPLICACIÓN GENERAL ================= -->
+<main class="view" id="v-resumen">
+
+  <section class="block">
+    <p class="eyebrow" data-i18n="resumen1Eyebrow">La pregunta que origina todo</p>
+    <blockquote class="q" data-i18n="resumen1Quote">¿Qué información de una pintura permanece cuando la convertimos en una experiencia sonora?</blockquote>
+    <p data-i18n="resumen1P1">Una pintura tiene muchas propiedades medibles: distribución de color, variación cromática, complejidad espacial, bordes, textura, estructura fractal, organización de regiones. El pipeline <b>ARGIRA</b> toma esas características visuales y las transforma en parámetros acústicos: frecuencia, timbre, armónicos, modulación, ritmo, espacialización.</p>
+    <p data-i18n="resumen1P2">Pero aparece una pregunta científica más profunda: cuando una imagen pasa por una transformación visual → acústica, <b>¿qué parte de su estructura sigue presente y puede ser recuperada?</b> Ahí aparece RMA.</p>
+  </section>
+
+  <section class="block">
+    <h2 class="block-title" data-i18n="resumen2Title">¿Qué es RMA?</h2>
+    <p data-i18n="resumen2P1"><b>RMA</b> significa <i>Residual Model Auditor</i>. Si tenemos una transformación:</p>
+    <div class="pipeline" data-i18n="resumen2Pipeline1">Imagen → ARGIRA → Sonido</div>
+    <p data-i18n="resumen2P2">podemos construir modelos que intenten explicar el resultado:</p>
+    <div class="pipeline" data-i18n="resumen2Pipeline2">Características visuales → Parámetro acústico</div>
+    <p data-i18n="resumen2P3">El modelo explica una parte. Pero queda un residuo:</p>
+    <div class="formula" data-i18n="resumen2Formula">Residuo = resultado real − resultado explicado</div>
+    <p data-i18n="resumen2P4">La pregunta de RMA es siempre la misma: <b>¿el residuo todavía contiene información estructural?</b></p>
+    <ul class="plain">
+      <li><span class="badge evidence" data-i18n="resumen2Badge1">sin estructura</span> &nbsp;<span data-i18n="resumen2Li1">el modelo explica bien la relación.</span></li>
+      <li><span class="badge residual" data-i18n="resumen2Badge2">predecible</span> &nbsp;<span data-i18n="resumen2Li2">queda información que el modelo no capturó.</span></li>
+    </ul>
+    <p data-i18n="resumen2P5">Eso permite estudiar las limitaciones reales del mapeo, no solo su capacidad predictiva.</p>
+  </section>
+
+  <section class="block">
+    <h2 class="block-title" data-i18n="resumen3Title">El Explorer</h2>
+    <p data-i18n="resumen3P1">El HTML autocontenido es una interfaz para explorar todo este sistema. No es solamente una visualización: es una capa de investigación donde se conectan el pipeline, los datos, la evidencia, las hipótesis y los análisis.</p>
+    <figure class="shot">
+      <svg class="shot-icon" viewBox="0 0 24 24" fill="none" stroke="#55504A" stroke-width="1.4"><rect x="3" y="4" width="18" height="14" rx="1.5"/><path d="M3 8h18"/><circle cx="6" cy="6" r="0.6" fill="#55504A"/></svg>
+      <figcaption data-i18n="resumen3Figcaption"><b>CAPTURA — pantalla de bienvenida del Explorer</b></figcaption>
+      <p class="shot-desc" data-i18n="resumen3ShotDesc">Vista general del HTML abierto en el navegador, mostrando el conjunto de pestañas (Network, Inspector, Evidence, Research, Analysis).</p>
+    </figure>
+  </section>
+
+  <section class="block">
+    <h2 class="block-title" data-i18n="resumen4Title">¿Qué hace especial a ARGIRA ↔ RMA?</h2>
+    <p data-i18n="resumen4P1">No es solamente <i>"una pintura produce un sonido"</i> — eso ya sería una sonificación. La pregunta más profunda es:</p>
+    <blockquote class="q" data-i18n="resumen4Quote">¿Qué estructura sobrevive cuando una representación artística cambia de dominio?</blockquote>
+    <p data-i18n="resumen4P2">ARGIRA estudia la traducción. RMA estudia la información que permanece después de esa traducción. El Explorer une ambas cosas en un instrumento donde se puede ver, analizar y auditar el proceso completo.</p>
+  </section>
+
+</main>
+
+<!-- ================= VIEW 01 : VERSIÓN 2 MINUTOS ================= -->
+<main class="view" id="v-2min" hidden>
+
+  <p class="eyebrow" data-i18n="min2Eyebrow">Para presentar en el póster · ICAD 2026</p>
+  <h2 class="block-title" data-i18n="min2Title">La versión de dos minutos</h2>
+
+  <section class="block">
+    <p data-i18n="min2P1"><b>ARGIRA ↔ RMA</b> es un instrumento de investigación que estudia qué ocurre cuando transformamos una pintura en sonido.</p>
+    <p data-i18n="min2P2">ARGIRA es un pipeline de sonificación: extrae características visuales de una imagen —como distribución de color, complejidad espacial, densidad de bordes o dimensión fractal— y las convierte en parámetros acústicos, creando una representación sonora de la obra.</p>
+    <p data-i18n="min2P3">Pero la pregunta principal no es solamente cómo generar un sonido a partir de una imagen. La pregunta es:</p>
+    <blockquote class="q" data-i18n="min2Quote">¿Qué información de la imagen permanece después de esa transformación?</blockquote>
+    <p data-i18n="min2P4">Para estudiar esto desarrollé <b>RMA</b>, <i>Residual Model Auditor</i>. RMA analiza la relación entre las características visuales de entrada y los parámetros acústicos de salida, estudiando también la información que queda en los residuos de los modelos. Si después de explicar el mapeo todavía queda estructura recuperable, significa que existe información que la transformación no ha capturado completamente.</p>
+    <p data-i18n="min2P5">El ARGIRA ↔ RMA Knowledge Explorer reúne todo este proceso en una aplicación web autocontenida. Permite visualizar la red de dependencias entre características visuales y parámetros acústicos, inspeccionar la procedencia de cada variable, separar evidencia validada de hipótesis exploratorias y ejecutar análisis reproducibles directamente en el navegador.</p>
+
+    <div class="note" data-i18n="min2Note"><b>Frase ancla para la presentación:</b> pasar de una <b>caja negra</b> —una imagen que entra y un sonido que sale— a un <b>proceso auditable</b> donde podemos estudiar qué se conserva, qué se pierde y qué nuevas estructuras pueden emerger durante una traducción entre dominios. Es el salto conceptual de ARGIRA hacia RMA — conviene enfatizarla.</div>
+
+    <p data-i18n="min2P6">ARGIRA no es solamente un sistema de sonificación. Es una plataforma para investigar la relación entre representación visual, sonido e información estructural.</p>
+
+    <figure class="shot">
+      <svg class="shot-icon" viewBox="0 0 24 24" fill="none" stroke="#55504A" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 21V9a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v12"/></svg>
+      <figcaption data-i18n="min2Figcaption"><b>CAPTURA — póster ICAD 2026</b></figcaption>
+      <p class="shot-desc" data-i18n="min2ShotDesc">Foto del póster impreso o su versión digital, para acompañar esta versión resumida en la presentación oral.</p>
+    </figure>
+  </section>
+
+</main>
+
+<!-- ================= VIEW 02 : VERSIÓN 10 MINUTOS ================= -->
+<main class="view" id="v-10min" hidden>
+
+  <p class="eyebrow" data-i18n="min10Eyebrow">Presentación oral extendida · ICAD 2026</p>
+  <h2 class="block-title" data-i18n="min10Title">La versión de diez minutos</h2>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="min10S1Title">1. Introducción: la pregunta de investigación</h3>
+    <p data-i18n="min10S1P1">ARGIRA nace de una pregunta sencilla pero profunda:</p>
+    <blockquote class="q" data-i18n="min10S1Quote">¿Qué ocurre con la información de una imagen cuando la transformamos en sonido?</blockquote>
+    <p data-i18n="min10S1P2">Una pintura contiene múltiples niveles de información: color, distribución espacial, textura, complejidad, organización de formas y patrones. Una sonificación convierte algunas de esas características visuales en parámetros acústicos.</p>
+    <p data-i18n="min10S1P3">En ARGIRA, una imagen no se traduce directamente en un sonido de forma arbitraria. Primero se extraen características visuales cuantificables y después estas alimentan un pipeline que genera parámetros acústicos: determinadas propiedades del color, la estructura espacial o la complejidad visual pueden influir en frecuencia, timbre, ritmo, modulación o espacialización.</p>
+    <p data-i18n="min10S1P4">Pero la pregunta científica más interesante aparece después, cuando la imagen ya cambió de dominio: <b>¿qué información permanece?</b></p>
+    <ul class="plain">
+      <li data-i18n="min10S1Li1">¿El sonido conserva estructura de la imagen original?</li>
+      <li data-i18n="min10S1Li2">¿Existe información que se pierde?</li>
+      <li data-i18n="min10S1Li3">¿Existen relaciones que el mapeo inicial no explica completamente?</li>
+    </ul>
+    <p data-i18n="min10S1P5">Para responder a estas preguntas desarrollé <b>RMA: Residual Model Auditor</b>.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="min10S2Title">2. Del mapeo visual-acústico a la auditoría residual</h3>
+    <p data-i18n="min10S2P1">Un sistema de sonificación puede verse como una función:</p>
+    <div class="pipeline" data-i18n="min10S2Pipeline1">Imagen → ARGIRA → Parámetro acústico</div>
+    <p data-i18n="min10S2P2">Podemos intentar explicar esa relación mediante modelos estadísticos. El modelo aprende una parte de la transformación:</p>
+    <div class="pipeline" data-i18n="min10S2Pipeline2">Características visuales → Resultado acústico esperado</div>
+    <p data-i18n="min10S2P3">Pero siempre existe una diferencia entre el valor observado y el valor predicho. Ese resto es el <b>residuo</b>. RMA estudia precisamente ese residuo — la pregunta no es solo <i>"¿qué tan bien predice el modelo?"</i>, sino algo más profundo:</p>
+    <blockquote class="q" data-i18n="min10S2Quote">Después de explicar la relación principal, ¿queda todavía información estructurada?</blockquote>
+    <ul class="plain">
+      <li><span class="badge evidence" data-i18n="min10S2Badge1">sin estructura</span>&nbsp;<span data-i18n="min10S2Li1"> el modelo captura adecuadamente la relación.</span></li>
+      <li><span class="badge residual" data-i18n="min10S2Badge2">predecible</span>&nbsp;<span data-i18n="min10S2Li2"> existe información que el modelo no está representando completamente.</span></li>
+    </ul>
+    <p data-i18n="min10S2P4">Esto permite estudiar limitaciones del mapeo y no solamente su capacidad predictiva.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="min10S3Title">3. El Knowledge Explorer</h3>
+    <p data-i18n="min10S3P1">Para hacer este proceso transparente desarrollé el <b>ARGIRA ↔ RMA Knowledge Explorer</b>: una aplicación web autocontenida que funciona completamente en el navegador. Su objetivo no es solo mostrar resultados, sino permitir inspeccionar todo el camino desde la imagen hasta el análisis estadístico.</p>
+    <p data-i18n="min10S3P2">La arquitectura está dividida en tres capas principales:</p>
+    <ul class="plain">
+      <li data-i18n="min10S3Li1"><b>Evidence</b> — resultados auditados.</li>
+      <li data-i18n="min10S3Li2"><b>Research</b> — exploración de hipótesis.</li>
+      <li data-i18n="min10S3Li3"><b>Analysis</b> — laboratorio reproducible.</li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="min10S4Title">4. Evidence: resultados auditados</h3>
+    <p data-i18n="min10S4P1">La primera capa es Evidence. Aquí se encuentran únicamente resultados confirmados y auditados — es una capa de solo lectura.</p>
+    <p data-i18n="min10S4P2">La razón es metodológica: una herramienta interactiva puede generar muchas exploraciones, pero una exploración no debe convertirse automáticamente en evidencia. Por eso Evidence permanece separada. Los resultados confirmados tienen una identidad clara: sabemos de dónde vienen, cómo fueron obtenidos y qué nivel de validación tienen.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="min10S5Title">5. Research: exploración de hipótesis</h3>
+    <p data-i18n="min10S5P1">La segunda capa es Research. Esta zona permite formular preguntas nuevas, por ejemplo:</p>
+    <ul class="plain">
+      <li data-i18n="min10S5Li1">¿Existe una relación inesperada entre determinadas características visuales y parámetros acústicos?</li>
+      <li data-i18n="min10S5Li2">¿Aparecen patrones que merecen una investigación posterior?</li>
+    </ul>
+    <p data-i18n="min10S5P2">Pero una hipótesis no es una evidencia. Research permite explorar sin contaminar los resultados confirmados: una hipótesis solamente puede pasar a Evidence después de una validación independiente.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="min10S6Title">6. Analysis: el laboratorio reproducible</h3>
+    <p data-i18n="min10S6P1">La tercera capa es Analysis. Aquí el usuario puede ejecutar el motor RMA directamente, usando:</p>
+    <ul class="plain">
+      <li data-i18n="min10S6Li1">el corpus incluido de 227 pinturas;</li>
+      <li data-i18n="min10S6Li2">o un dataset externo proporcionado por el usuario.</li>
+    </ul>
+    <p data-i18n="min10S6P2">El análisis se ejecuta localmente mediante <b>Pyodide</b> en el navegador. Esto significa que los resultados de una exploración permanecen en la sesión del usuario y no modifican la evidencia almacenada. La herramienta permite generar informes y exportar resultados para continuar el análisis fuera del Explorer.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="min10S7Title">7. La red de dependencias: hacer visible la transformación</h3>
+    <p data-i18n="min10S7P1">Una de las partes centrales del Explorer es el <b>Design Graph</b>. Este grafo representa cómo una característica visual atraviesa el pipeline hasta convertirse en un parámetro acústico — por ejemplo, una propiedad de color puede alimentar una función del pipeline, que genera un parámetro acústico concreto.</p>
+    <p data-i18n="min10S7P2">La red permite responder preguntas como:</p>
+    <ul class="plain">
+      <li data-i18n="min10S7Li1">¿De dónde viene este parámetro?</li>
+      <li data-i18n="min10S7Li2">¿Qué variables lo afectan?</li>
+      <li data-i18n="min10S7Li3">¿Es una relación directa o derivada?</li>
+      <li data-i18n="min10S7Li4">¿Existe evidencia de sensibilidad?</li>
+    </ul>
+    <p data-i18n="min10S7P3">La intención es eliminar la caja negra. En lugar de ver solamente <code>imagen → sonido</code>, podemos estudiar todo el camino intermedio.</p>
+    <figure class="shot">
+      <svg class="shot-icon" viewBox="0 0 24 24" fill="none" stroke="#55504A" stroke-width="1.4"><circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="12" cy="18" r="2.2"/><path d="M7.7 7.3 10.5 16M16.3 7.3 13.5 16M8.2 6h7.6"/></svg>
+      <figcaption data-i18n="min10S7Figcaption"><b>CAPTURA — Design Graph del Explorer</b></figcaption>
+      <p class="shot-desc" data-i18n="min10S7ShotDesc">Vista del grafo de dependencias mostrando el recorrido desde una característica visual hasta el parámetro acústico que genera.</p>
+    </figure>
+  </section>
+
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="min10S8Title">8. El inspector de nodos: trazabilidad</h3>
+    <p data-i18n="min10S8P1">Cada elemento del grafo puede inspeccionarse. El sistema muestra:</p>
+    <ul class="plain">
+      <li data-i18n="min10S8Li1">nombre</li>
+      <li data-i18n="min10S8Li2">categoría</li>
+      <li data-i18n="min10S8Li3">unidad</li>
+      <li data-i18n="min10S8Li4">rango</li>
+      <li data-i18n="min10S8Li5">función o módulo de origen</li>
+      <li data-i18n="min10S8Li6">estado de validación</li>
+    </ul>
+    <p data-i18n="min10S8P2">Esto convierte cada variable en un objeto trazable. No solamente sabemos qué variable existe, sino qué papel cumple dentro del sistema.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="min10S9Title">9. Reproducibilidad</h3>
+    <p data-i18n="min10S9P1">Otro objetivo fundamental fue que el trabajo pudiera ser inspeccionado por otras personas. Por eso el artefacto incluye:</p>
+    <ul class="plain">
+      <li data-i18n="min10S9Li1">la aplicación completa</li>
+      <li data-i18n="min10S9Li2">el dataset del corpus</li>
+      <li data-i18n="min10S9Li3">plantillas CSV</li>
+      <li data-i18n="min10S9Li4">ejemplos de análisis</li>
+      <li data-i18n="min10S9Li5">informes HTML y PDF</li>
+      <li data-i18n="min10S9Li6">exportación del grafo</li>
+    </ul>
+    <p data-i18n="min10S9P2">El archivo principal contiene todo lo necesario para explorar el sistema sin instalar un servidor ni reconstruir manualmente el entorno.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="min10S10Title">10. Idea final</h3>
+    <p data-i18n="min10S10P1">ARGIRA comenzó como un sistema de sonificación de pinturas. Pero con RMA se convirtió en algo diferente: <b>un instrumento para estudiar qué ocurre cuando una representación cambia de dominio</b>.</p>
+    <p data-i18n="min10S10P2">La pregunta ya no es solamente <i>¿cómo convertir una imagen en sonido?</i> La pregunta es:</p>
+    <blockquote class="q" data-i18n="min10S10Quote">¿Qué estructura, qué información y qué relaciones sobreviven cuando una imagen se transforma en una experiencia acústica?</blockquote>
+    <p data-i18n="min10S10P3">El Knowledge Explorer hace visible ese proceso y permite estudiarlo de una manera reproducible, auditable y abierta a nuevas investigaciones.</p>
+    <div class="note" data-i18n="min10S10Note"><b>Nota de presentación:</b> practicar especialmente las transiciones entre secciones, porque el proyecto tiene una idea central muy potente: no es solo sonificación; es el estudio de la información después de la sonificación.</div>
+  </section>
+
+</main>
+
+<!-- ================= VIEW 03 : VERSIÓN TÉCNICA ================= -->
+<main class="view" id="v-tecnica" hidden>
+
+  <p class="eyebrow">Explicación técnica para investigadores</p>
+  <h2 class="block-title">La versión técnica</h2>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="tecS1Title">1. Visión general del sistema</h3>
+    <p data-i18n="tecS1P1">ARGIRA ↔ RMA es una arquitectura reproducible para estudiar transformaciones cross-modales entre representación visual y representación acústica. El sistema está compuesto por dos elementos principales:</p>
+    <ul class="plain">
+      <li data-i18n="tecS1Li1"><b>ARGIRA</b>: un pipeline determinista de sonificación visual-acústica.</li>
+      <li data-i18n="tecS1Li2"><b>RMA (Residual Model Auditor)</b>: un framework para auditar qué información estructural permanece después del mapeo.</li>
+    </ul>
+    <p data-i18n="tecS1P2">El objetivo no es únicamente generar una salida acústica a partir de una entrada visual, sino analizar la estructura informacional de la transformación. Formalmente:</p>
+    <ul class="plain">
+      <li data-i18n="tecS1Li3"><code>X</code> = características visuales extraídas de la imagen</li>
+      <li data-i18n="tecS1Li4"><code>Y</code> = parámetros acústicos generados por ARGIRA</li>
+    </ul>
+    <p data-i18n="tecS1P3">El sistema estudia:</p>
+    <div class="pipeline">X → f(X) = Y</div>
+    <p data-i18n="tecS1P4">y posteriormente analiza si una clase de modelos <code>g(X)</code> puede explicar completamente la relación:</p>
+    <div class="pipeline">Y ≈ g(X)</div>
+    <p data-i18n="tecS1P5">La diferencia:</p>
+    <div class="formula">R = Y − g(X)</div>
+    <p data-i18n="tecS1P6">define el residuo que RMA audita.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="tecS2Title">2. Pipeline ARGIRA</h3>
+    <p data-i18n="tecS2P1">ARGIRA comienza con una imagen. El sistema extrae características visuales que representan diferentes dimensiones de la obra:</p>
+    <ul class="plain">
+      <li data-i18n="tecS2Li1">estadísticas de color</li>
+      <li data-i18n="tecS2Li2">distribución cromática</li>
+      <li data-i18n="tecS2Li3">entropía</li>
+      <li data-i18n="tecS2Li4">densidad de bordes</li>
+      <li data-i18n="tecS2Li5">complejidad espacial</li>
+      <li data-i18n="tecS2Li6">dimensión fractal</li>
+      <li data-i18n="tecS2Li7">características derivadas de partición espacial</li>
+    </ul>
+    <p data-i18n="tecS2P2">Estas variables entran en el pipeline de sonificación, que las transforma mediante funciones explícitas en parámetros acústicos:</p>
+    <ul class="plain">
+      <li data-i18n="tecS2Li8">frecuencia base</li>
+      <li data-i18n="tecS2Li9">componentes armónicos</li>
+      <li data-i18n="tecS2Li10">peso de osciladores</li>
+      <li data-i18n="tecS2Li11">modulación</li>
+      <li data-i18n="tecS2Li12">envolvente</li>
+      <li data-i18n="tecS2Li13">tempo</li>
+      <li data-i18n="tecS2Li14">posición espacial</li>
+    </ul>
+    <p data-i18n="tecS2P3">La arquitectura mantiene una separación clara entre: datos de entrada, transformaciones, parámetros generados y salida acústica.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="tecS3Title">3. Design Graph</h3>
+    <p data-i18n="tecS3P1">El Design Graph representa la estructura computacional del pipeline. No es un grafo conceptual generado manualmente, sino una representación de dependencias extraída del sistema real.</p>
+    <p data-i18n="tecS3P2">Cada nodo representa un elemento del proceso:</p>
+    <ul class="plain">
+      <li data-i18n="tecS3Li1">feature visual</li>
+      <li data-i18n="tecS3Li2">variable intermedia</li>
+      <li data-i18n="tecS3Li3">parámetro acústico</li>
+      <li data-i18n="tecS3Li4">componente funcional</li>
+    </ul>
+    <p data-i18n="tecS3P3">Cada conexión representa una dependencia. Esto permite inspeccionar:</p>
+    <ul class="plain">
+      <li data-i18n="tecS3Li5">qué entradas producen cada salida</li>
+      <li data-i18n="tecS3Li6">qué variables son centrales</li>
+      <li data-i18n="tecS3Li7">qué parámetros dependen de múltiples fuentes</li>
+      <li data-i18n="tecS3Li8">dónde existen transformaciones directas o derivadas</li>
+    </ul>
+    <p data-i18n="tecS3P4">El objetivo es aportar interpretabilidad estructural.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="tecS4Title">4. Sensitivity Evidence</h3>
+    <p data-i18n="tecS4P1">Las relaciones del grafo se complementan con evidencia de sensibilidad. La sensibilidad se obtiene mediante perturbaciones controladas: <b>±5% sobre variables de entrada</b>.</p>
+    <p data-i18n="tecS4P2">Se observa cómo cambia la salida acústica ante esas perturbaciones. La intensidad de una conexión no representa únicamente existencia de una relación, sino magnitud de respuesta bajo una perturbación definida. Esto permite distinguir relaciones presentes de relaciones con impacto cuantificable.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="tecS5Title">5. Residual Model Auditor (RMA)</h3>
+    <p data-i18n="tecS5P1">RMA evalúa si una hipótesis de modelado captura completamente una transformación. El procedimiento general:</p>
+    <ul class="plain">
+      <li data-i18n="tecS5Li1">Seleccionar una variable acústica objetivo <code>Y</code>.</li>
+      <li data-i18n="tecS5Li2">Definir variables explicativas <code>X</code>.</li>
+      <li data-i18n="tecS5Li3">Ajustar un modelo <code>g(X)</code>.</li>
+      <li data-i18n="tecS5Li4">Obtener predicciones mediante validación cruzada.</li>
+      <li data-i18n="tecS5Li5">Calcular residuos fuera de muestra.</li>
+      <li data-i18n="tecS5Li6">Evaluar si esos residuos conservan estructura.</li>
+    </ul>
+    <p data-i18n="tecS5P2">La utilización de predicciones cross-validation es fundamental porque evita interpretar como información real patrones producidos por ajuste dentro de muestra.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="tecS6Title">6. Residual predictability</h3>
+    <p data-i18n="tecS6P1">La métrica central es la capacidad de predecir los residuos.</p>
+    <ul class="plain">
+      <li data-i18n="tecS6Li1"><span class="badge evidence">sin estructura</span>&nbsp; si <code>R² residual ≈ 0</code> → la información restante no presenta estructura recuperable bajo el modelo utilizado.</li>
+      <li data-i18n="tecS6Li2"><span class="badge residual">predecible</span>&nbsp; si <code>R² residual &gt; 0</code> → existe estructura no explicada.</li>
+    </ul>
+    <p data-i18n="tecS6P2">Esto no significa automáticamente que exista un fenómeno nuevo. Significa que existe información que la hipótesis del modelo no captura. La interpretación requiere análisis adicional.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="tecS7Title">7. Separación Evidence / Research / Analysis</h3>
+    <p data-i18n="tecS7P1">La arquitectura incorpora una separación explícita entre estados epistemológicos.</p>
+    <table class="meta">
+      <tr><th data-i18n="tecS7Th1">Capa</th><th data-i18n="tecS7Th2">Características</th></tr>
+      <tr><td><b>Evidence</b></td><td data-i18n="tecS7Td1">solo lectura · procedencia conocida · no modificable por exploración</td></tr>
+      <tr><td><b>Research</b></td><td data-i18n="tecS7Td2">generación de preguntas · búsqueda de patrones · no constituye evidencia</td></tr>
+      <tr><td><b>Analysis</b></td><td data-i18n="tecS7Td3">resultados locales · reproducibles · no promocionados automáticamente</td></tr>
+    </table>
+    <p data-i18n="tecS7P2">Esta separación evita mezclar exploración con confirmación.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="tecS8Title">8. Arquitectura del Explorer</h3>
+    <p data-i18n="tecS8P1">El Explorer es una aplicación HTML autocontenida. Incluye:</p>
+    <ul class="plain">
+      <li data-i18n="tecS8Li1">interfaz visual</li>
+      <li data-i18n="tecS8Li2">lógica de interacción</li>
+      <li data-i18n="tecS8Li3">corpus embebido</li>
+      <li data-i18n="tecS8Li4">motor estadístico ejecutable mediante Pyodide</li>
+      <li data-i18n="tecS8Li5">sistema de exportación</li>
+    </ul>
+    <p data-i18n="tecS8P2">El usuario puede abrir el archivo, inspeccionar la arquitectura, ejecutar análisis y exportar resultados. No requiere infraestructura externa.</p>
+    <figure class="shot">
+      <svg class="shot-icon" viewBox="0 0 24 24" fill="none" stroke="#55504A" stroke-width="1.4"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9h18M8 4v5"/></svg>
+      <figcaption data-i18n="tecS8Figcaption"><b>CAPTURA — vista de arquitectura del Explorer</b></figcaption>
+      <p class="shot-desc" data-i18n="tecS8ShotDesc">Panel técnico mostrando los módulos del sistema: interfaz, corpus, motor Pyodide y exportación.</p>
+    </figure>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="tecS9Title">9. Reproducibilidad y trazabilidad</h3>
+    <p data-i18n="tecS9P1">El sistema proporciona trazabilidad completa:</p>
+    <div class="pipeline" data-i18n="tecS9Pipeline">Imagen
+  ↓
+Feature visual
+  ↓
+Función ARGIRA
+  ↓
+Parámetro acústico
+  ↓
+Columna CSV
+  ↓
+Análisis RMA
+  ↓
+Informe exportado</div>
+    <p data-i18n="tecS9P2">Cada etapa mantiene una relación explícita con la siguiente. Esto permite auditar no solamente resultados, sino también el camino que los produce.</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title" data-i18n="tecS10Title">10. Interpretación científica</h3>
+    <p data-i18n="tecS10P1">ARGIRA ↔ RMA no intenta afirmar que existe una traducción perfecta entre imagen y sonido. El objetivo es estudiar las propiedades de una transformación cross-modal:</p>
+    <ul class="plain">
+      <li data-i18n="tecS10Li1">qué información se conserva</li>
+      <li data-i18n="tecS10Li2">qué información desaparece</li>
+      <li data-i18n="tecS10Li3">qué información queda oculta para modelos simples</li>
+      <li data-i18n="tecS10Li4">qué estructuras emergen después del mapeo</li>
+    </ul>
+    <p data-i18n="tecS10P2">La contribución metodológica es proporcionar un marco donde una transformación artística pueda ser analizada como un sistema computacional auditable.</p>
+    <p data-i18n="tecS10P3">En ese sentido, ARGIRA ↔ RMA funciona como un puente entre sonificación, análisis estadístico, reproducibilidad científica y auditoría de modelos.</p>
+    <div class="note" data-i18n="tecS10Note"><b>Nota:</b> la explicación técnica revela algo que quizá no se nota al mirar el HTML: el verdadero producto no es el archivo. El archivo es el contenedor. El producto intelectual es la <b>arquitectura de auditoría de una transformación visual-acústica</b>.</div>
+  </section>
+
+</main>
+
+<!-- ================= VIEW 04 : MAPA MAESTRO ================= -->
+<main class="view" id="v-mapa" hidden>
+
+  <p class="eyebrow">Herramienta de referencia personal</p>
+  <h2 class="block-title">Mapa maestro</h2>
+  <p class="dim">No es una explicación para otros, sino algo que puedas mirar y decir <i>"ahora entiendo qué es cada pieza y cómo encaja"</i>.</p>
+
+  <section class="block">
+    <h3 class="sub-title">A. La pregunta central</h3>
+    <blockquote class="q">¿Qué información de una imagen sobrevive cuando una transformación la convierte en sonido?</blockquote>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title">B. El generador — ARGIRA Pipeline</h3>
+    <table class="meta">
+      <tr><th>Entrada</th><td>Pintura</td></tr>
+      <tr><th>Extrae</th><td>Características visuales (color, textura, estructura, complejidad)</td></tr>
+      <tr><th>Transforma</th><td>Funciones de mapeo</td></tr>
+      <tr><th>Produce</th><td>Parámetros acústicos</td></tr>
+    </table>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title">C. El auditor — RMA</h3>
+    <p><b>Pregunta:</b> ¿el mapeo explica toda la estructura?</p>
+    <div class="pipeline">Salida acústica
+      ↓
+Modelo explicativo
+      ↓
+Residuo</div>
+    <p><b>Pregunta:</b> ¿queda información recuperable en el residuo?</p>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title">D. El explorador — Knowledge Explorer</h3>
+    <p>Es la ventana para estudiar todo. Tiene cuatro grandes funciones:</p>
+    <ul class="plain">
+      <li><b>Ver</b> — Network → <i>"¿Cómo está conectado el sistema?"</i></li>
+      <li><b>Entender</b> — Inspector → <i>"¿Qué es cada elemento y de dónde viene?"</i></li>
+      <li><b>Separar conocimiento</b> — Evidence / Research → <i>"¿Qué sé y qué estoy investigando?"</i></li>
+      <li><b>Experimentar</b> — Analysis → <i>"¿Qué ocurre si pruebo nuevos modelos o datos?"</i></li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title">E. La filosofía del proyecto</h3>
+    <p><b>No es:</b></p>
+    <blockquote class="q">"Una IA que convierte cuadros en música."</blockquote>
+    <p class="dim">Eso sería una descripción superficial.</p>
+    <p><b>Es:</b></p>
+    <blockquote class="q">"Un marco para estudiar la conservación y pérdida de información durante una transformación entre dominios."</blockquote>
+  </section>
+
+  <section class="block">
+    <h3 class="sub-title">F. Las grandes preguntas abiertas</h3>
+    <p>Aquí empieza la verdadera investigación:</p>
+    <ul class="plain">
+      <li>¿Qué características visuales son más estables después del mapeo?</li>
+      <li>¿Qué parámetros acústicos conservan más información?</li>
+      <li>¿Cuándo un residuo representa una limitación del modelo y cuándo una propiedad emergente?</li>
+      <li>¿Qué relaciones sobreviven a validaciones perceptuales humanas?</li>
+      <li>¿Puede una representación sonora transmitir estructuras visuales sin acceso visual directo?</li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <div class="note"><b>Próximo paso recomendado:</b> hacer este mapa maestro y después preparar una "guía del Explorer" pestaña por pestaña, con capturas y ejemplos — la parte difícil (construir el objeto) ya está hecha; ahora toca convertirlo en conocimiento comunicable.</div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  // ---------- tab switching: router mínimo basado en [hidden] ----------
+  // Nada de clases .active gestionadas a mano, nada de scrollTo().
+  // El atributo nativo `hidden` ya lo entiende el navegador: no hay
+  // instante intermedio en el que ninguna vista tenga layout, y como
+  // nunca llamamos a scrollTo, no hay nada que el router pueda usar
+  // para mover la posición de scroll del usuario.
+  var tabButtons = document.querySelectorAll('.tab-btn');
+  var views = document.querySelectorAll('.view');
+
+  function activateView(targetId){
+    if (window.__dbg) window.__dbg('activateView() ENTRADA targetId=' + targetId);
+    var targetView = document.getElementById(targetId);
+    var targetBtn = document.querySelector('.tab-btn[data-view="' + targetId + '"]');
+    if (!targetView || !targetBtn) return false; // vista o pestaña no existen
+    if (targetBtn.classList.contains('disabled')) return false; // Guía Explorer: en construcción
+
+    tabButtons.forEach(function(b){ b.classList.remove('active'); });
+    targetBtn.classList.add('active');
+
+    views.forEach(function(v){
+      if (v !== targetView) v.setAttribute('hidden', '');
+    });
+    targetView.removeAttribute('hidden');
+
+    return true;
+  }
+
+  tabButtons.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var targetId = btn.getAttribute('data-view');
+      if (window.__dbg) window.__dbg('click .tab-btn targetId=' + targetId);
+      if (btn.classList.contains('disabled')) return; // Guía Explorer: en construcción
+
+      var activated = activateView(targetId);
+      if (!activated) return;
+
+      // refleja la vista actual en el hash, sin disparar hashchange
+      if (history.replaceState){
+        if (window.__dbg) window.__dbg('history.replaceState() targetId=' + targetId);
+        history.replaceState(null, '', '#' + targetId);
+      } else {
+        window.location.hash = targetId;
+      }
+    });
+  });
+
+  // ---------- deep-linking por hash (#v-resumen, #v-2min, ...) ----------
+  function activateFromHash(){
+    var hash = window.location.hash.replace('#', '');
+    if (window.__dbg) window.__dbg('activateFromHash() ENTRADA hash=' + hash);
+    if (!hash) return;
+    activateView(hash);
+  }
+
+  window.addEventListener('hashchange', activateFromHash);
+  activateFromHash(); // al cargar la página, respeta un deep-link si lo hay
+
+  // ---------- diccionario i18n ----------
+  // Cada clave corresponde a un atributo data-i18n="clave" en el HTML.
+  // Para añadir un nuevo idioma: duplicar el objeto "es" o "en" con otro
+  // código (ej. "fr") y añadirlo aquí; translatePage(lang) hace el resto.
+  //
+  // Si un valor es string -> se usa textContent (no permite HTML dentro).
+  // Si un valor es { html: "..." } -> se usa innerHTML (el original tenía
+  // etiquetas como <b> o <i> dentro del texto y hay que conservarlas).
+  var I18N = {
+    es: {
+      brandSub: "Cómo explicar el proyecto",
+      tab00: "General",
+      tab01: "2 min",
+      tab02: "10 min",
+      tab03: "Técnica",
+      tab04: "Mapa maestro",
+      tab05: "Guía Explorer",
+
+      heroEyebrow: "Un instrumento, no una landing",
+      heroTitle: "Qué sobrevive cuando una pintura se convierte en sonido",
+      heroLede: "Seis maneras de contar el mismo proyecto — desde una frase para quien no sabe nada, hasta la arquitectura formal para un revisor de ICAD. Todas describen la misma idea central: pasar de una caja negra a un proceso auditable.",
+      heroFigcaption: "Y = g(X) + R — RMA audita si R todavía contiene estructura",
+
+      resumen1Eyebrow: "La pregunta que origina todo",
+      resumen1Quote: "¿Qué información de una pintura permanece cuando la convertimos en una experiencia sonora?",
+      resumen1P1: { html: 'Una pintura tiene muchas propiedades medibles: distribución de color, variación cromática, complejidad espacial, bordes, textura, estructura fractal, organización de regiones. El pipeline <b>ARGIRA</b> toma esas características visuales y las transforma en parámetros acústicos: frecuencia, timbre, armónicos, modulación, ritmo, espacialización.' },
+      resumen1P2: { html: 'Pero aparece una pregunta científica más profunda: cuando una imagen pasa por una transformación visual → acústica, <b>¿qué parte de su estructura sigue presente y puede ser recuperada?</b> Ahí aparece RMA.' },
+
+      resumen2Title: "¿Qué es RMA?",
+      resumen2P1: { html: '<b>RMA</b> significa <i>Residual Model Auditor</i>. Si tenemos una transformación:' },
+      resumen2Pipeline1: "Imagen → ARGIRA → Sonido",
+      resumen2P2: "podemos construir modelos que intenten explicar el resultado:",
+      resumen2Pipeline2: "Características visuales → Parámetro acústico",
+      resumen2P3: "El modelo explica una parte. Pero queda un residuo:",
+      resumen2Formula: "Residuo = resultado real − resultado explicado",
+      resumen2P4: { html: 'La pregunta de RMA es siempre la misma: <b>¿el residuo todavía contiene información estructural?</b>' },
+      resumen2Badge1: "sin estructura",
+      resumen2Li1: "el modelo explica bien la relación.",
+      resumen2Badge2: "predecible",
+      resumen2Li2: "queda información que el modelo no capturó.",
+      resumen2P5: "Eso permite estudiar las limitaciones reales del mapeo, no solo su capacidad predictiva.",
+
+      resumen3Title: "El Explorer",
+      resumen3P1: "El HTML autocontenido es una interfaz para explorar todo este sistema. No es solamente una visualización: es una capa de investigación donde se conectan el pipeline, los datos, la evidencia, las hipótesis y los análisis.",
+      resumen3Figcaption: { html: '<b>CAPTURA — pantalla de bienvenida del Explorer</b>' },
+      resumen3ShotDesc: "Vista general del HTML abierto en el navegador, mostrando el conjunto de pestañas (Network, Inspector, Evidence, Research, Analysis).",
+
+      resumen4Title: "¿Qué hace especial a ARGIRA ↔ RMA?",
+      resumen4P1: { html: 'No es solamente <i>"una pintura produce un sonido"</i> — eso ya sería una sonificación. La pregunta más profunda es:' },
+      resumen4Quote: "¿Qué estructura sobrevive cuando una representación artística cambia de dominio?",
+      resumen4P2: "ARGIRA estudia la traducción. RMA estudia la información que permanece después de esa traducción. El Explorer une ambas cosas en un instrumento donde se puede ver, analizar y auditar el proceso completo.",
+
+      min2Eyebrow: "Para presentar en el póster · ICAD 2026",
+      min2Title: "La versión de dos minutos",
+      min2P1: { html: '<b>ARGIRA ↔ RMA</b> es un instrumento de investigación que estudia qué ocurre cuando transformamos una pintura en sonido.' },
+      min2P2: "ARGIRA es un pipeline de sonificación: extrae características visuales de una imagen —como distribución de color, complejidad espacial, densidad de bordes o dimensión fractal— y las convierte en parámetros acústicos, creando una representación sonora de la obra.",
+      min2P3: "Pero la pregunta principal no es solamente cómo generar un sonido a partir de una imagen. La pregunta es:",
+      min2Quote: "¿Qué información de la imagen permanece después de esa transformación?",
+      min2P4: { html: 'Para estudiar esto desarrollé <b>RMA</b>, <i>Residual Model Auditor</i>. RMA analiza la relación entre las características visuales de entrada y los parámetros acústicos de salida, estudiando también la información que queda en los residuos de los modelos. Si después de explicar el mapeo todavía queda estructura recuperable, significa que existe información que la transformación no ha capturado completamente.' },
+      min2P5: "El ARGIRA ↔ RMA Knowledge Explorer reúne todo este proceso en una aplicación web autocontenida. Permite visualizar la red de dependencias entre características visuales y parámetros acústicos, inspeccionar la procedencia de cada variable, separar evidencia validada de hipótesis exploratorias y ejecutar análisis reproducibles directamente en el navegador.",
+      min2Note: { html: '<b>Frase ancla para la presentación:</b> pasar de una <b>caja negra</b> —una imagen que entra y un sonido que sale— a un <b>proceso auditable</b> donde podemos estudiar qué se conserva, qué se pierde y qué nuevas estructuras pueden emerger durante una traducción entre dominios. Es el salto conceptual de ARGIRA hacia RMA — conviene enfatizarla.' },
+      min2P6: "ARGIRA no es solamente un sistema de sonificación. Es una plataforma para investigar la relación entre representación visual, sonido e información estructural.",
+      min2Figcaption: { html: '<b>CAPTURA — póster ICAD 2026</b>' },
+      min2ShotDesc: "Foto del póster impreso o su versión digital, para acompañar esta versión resumida en la presentación oral.",
+
+      min10Eyebrow: "Presentación oral extendida · ICAD 2026",
+      min10Title: "La versión de diez minutos",
+      min10S1Title: "1. Introducción: la pregunta de investigación",
+      min10S1P1: "ARGIRA nace de una pregunta sencilla pero profunda:",
+      min10S1Quote: "¿Qué ocurre con la información de una imagen cuando la transformamos en sonido?",
+      min10S1P2: "Una pintura contiene múltiples niveles de información: color, distribución espacial, textura, complejidad, organización de formas y patrones. Una sonificación convierte algunas de esas características visuales en parámetros acústicos.",
+      min10S1P3: "En ARGIRA, una imagen no se traduce directamente en un sonido de forma arbitraria. Primero se extraen características visuales cuantificables y después estas alimentan un pipeline que genera parámetros acústicos: determinadas propiedades del color, la estructura espacial o la complejidad visual pueden influir en frecuencia, timbre, ritmo, modulación o espacialización.",
+      min10S1P4: { html: 'Pero la pregunta científica más interesante aparece después, cuando la imagen ya cambió de dominio: <b>¿qué información permanece?</b>' },
+      min10S1Li1: "¿El sonido conserva estructura de la imagen original?",
+      min10S1Li2: "¿Existe información que se pierde?",
+      min10S1Li3: "¿Existen relaciones que el mapeo inicial no explica completamente?",
+      min10S1P5: { html: 'Para responder a estas preguntas desarrollé <b>RMA: Residual Model Auditor</b>.' },
+
+      min10S2Title: "2. Del mapeo visual-acústico a la auditoría residual",
+      min10S2P1: "Un sistema de sonificación puede verse como una función:",
+      min10S2Pipeline1: "Imagen → ARGIRA → Parámetro acústico",
+      min10S2P2: "Podemos intentar explicar esa relación mediante modelos estadísticos. El modelo aprende una parte de la transformación:",
+      min10S2Pipeline2: "Características visuales → Resultado acústico esperado",
+      min10S2P3: { html: 'Pero siempre existe una diferencia entre el valor observado y el valor predicho. Ese resto es el <b>residuo</b>. RMA estudia precisamente ese residuo — la pregunta no es solo <i>"¿qué tan bien predice el modelo?"</i>, sino algo más profundo:' },
+      min10S2Quote: "Después de explicar la relación principal, ¿queda todavía información estructurada?",
+      min10S2Badge1: "sin estructura",
+      min10S2Li1: " el modelo captura adecuadamente la relación.",
+      min10S2Badge2: "predecible",
+      min10S2Li2: " existe información que el modelo no está representando completamente.",
+      min10S2P4: "Esto permite estudiar limitaciones del mapeo y no solamente su capacidad predictiva.",
+
+      min10S3Title: "3. El Knowledge Explorer",
+      min10S3P1: { html: 'Para hacer este proceso transparente desarrollé el <b>ARGIRA ↔ RMA Knowledge Explorer</b>: una aplicación web autocontenida que funciona completamente en el navegador. Su objetivo no es solo mostrar resultados, sino permitir inspeccionar todo el camino desde la imagen hasta el análisis estadístico.' },
+      min10S3P2: "La arquitectura está dividida en tres capas principales:",
+      min10S3Li1: { html: '<b>Evidence</b> — resultados auditados.' },
+      min10S3Li2: { html: '<b>Research</b> — exploración de hipótesis.' },
+      min10S3Li3: { html: '<b>Analysis</b> — laboratorio reproducible.' },
+
+      min10S4Title: "4. Evidence: resultados auditados",
+      min10S4P1: "La primera capa es Evidence. Aquí se encuentran únicamente resultados confirmados y auditados — es una capa de solo lectura.",
+      min10S4P2: "La razón es metodológica: una herramienta interactiva puede generar muchas exploraciones, pero una exploración no debe convertirse automáticamente en evidencia. Por eso Evidence permanece separada. Los resultados confirmados tienen una identidad clara: sabemos de dónde vienen, cómo fueron obtenidos y qué nivel de validación tienen.",
+
+      min10S5Title: "5. Research: exploración de hipótesis",
+      min10S5P1: "La segunda capa es Research. Esta zona permite formular preguntas nuevas, por ejemplo:",
+      min10S5Li1: "¿Existe una relación inesperada entre determinadas características visuales y parámetros acústicos?",
+      min10S5Li2: "¿Aparecen patrones que merecen una investigación posterior?",
+      min10S5P2: "Pero una hipótesis no es una evidencia. Research permite explorar sin contaminar los resultados confirmados: una hipótesis solamente puede pasar a Evidence después de una validación independiente.",
+
+      min10S6Title: "6. Analysis: el laboratorio reproducible",
+      min10S6P1: "La tercera capa es Analysis. Aquí el usuario puede ejecutar el motor RMA directamente, usando:",
+      min10S6Li1: "el corpus incluido de 227 pinturas;",
+      min10S6Li2: "o un dataset externo proporcionado por el usuario.",
+      min10S6P2: { html: 'El análisis se ejecuta localmente mediante <b>Pyodide</b> en el navegador. Esto significa que los resultados de una exploración permanecen en la sesión del usuario y no modifican la evidencia almacenada. La herramienta permite generar informes y exportar resultados para continuar el análisis fuera del Explorer.' },
+
+      min10S7Title: "7. La red de dependencias: hacer visible la transformación",
+      min10S7P1: { html: 'Una de las partes centrales del Explorer es el <b>Design Graph</b>. Este grafo representa cómo una característica visual atraviesa el pipeline hasta convertirse en un parámetro acústico — por ejemplo, una propiedad de color puede alimentar una función del pipeline, que genera un parámetro acústico concreto.' },
+      min10S7P2: "La red permite responder preguntas como:",
+      min10S7Li1: "¿De dónde viene este parámetro?",
+      min10S7Li2: "¿Qué variables lo afectan?",
+      min10S7Li3: "¿Es una relación directa o derivada?",
+      min10S7Li4: "¿Existe evidencia de sensibilidad?",
+      min10S7P3: { html: 'La intención es eliminar la caja negra. En lugar de ver solamente <code>imagen → sonido</code>, podemos estudiar todo el camino intermedio.' },
+      min10S7Figcaption: { html: '<b>CAPTURA — Design Graph del Explorer</b>' },
+      min10S7ShotDesc: "Vista del grafo de dependencias mostrando el recorrido desde una característica visual hasta el parámetro acústico que genera.",
+
+      min10S8Title: "8. El inspector de nodos: trazabilidad",
+      min10S8P1: "Cada elemento del grafo puede inspeccionarse. El sistema muestra:",
+      min10S8Li1: "nombre",
+      min10S8Li2: "categoría",
+      min10S8Li3: "unidad",
+      min10S8Li4: "rango",
+      min10S8Li5: "función o módulo de origen",
+      min10S8Li6: "estado de validación",
+      min10S8P2: "Esto convierte cada variable en un objeto trazable. No solamente sabemos qué variable existe, sino qué papel cumple dentro del sistema.",
+      min10S9Title: "9. Reproducibilidad",
+      min10S9P1: "Otro objetivo fundamental fue que el trabajo pudiera ser inspeccionado por otras personas. Por eso el artefacto incluye:",
+      min10S9Li1: "la aplicación completa",
+      min10S9Li2: "el dataset del corpus",
+      min10S9Li3: "plantillas CSV",
+      min10S9Li4: "ejemplos de análisis",
+      min10S9Li5: "informes HTML y PDF",
+      min10S9Li6: "exportación del grafo",
+      min10S9P2: "El archivo principal contiene todo lo necesario para explorar el sistema sin instalar un servidor ni reconstruir manualmente el entorno.",
+      min10S10Title: "10. Idea final",
+      min10S10P1: { html: "ARGIRA comenzó como un sistema de sonificación de pinturas. Pero con RMA se convirtió en algo diferente: <b>un instrumento para estudiar qué ocurre cuando una representación cambia de dominio</b>." },
+      min10S10P2: { html: "La pregunta ya no es solamente <i>¿cómo convertir una imagen en sonido?</i> La pregunta es:" },
+      min10S10Quote: "¿Qué estructura, qué información y qué relaciones sobreviven cuando una imagen se transforma en una experiencia acústica?",
+      min10S10P3: "El Knowledge Explorer hace visible ese proceso y permite estudiarlo de una manera reproducible, auditable y abierta a nuevas investigaciones.",
+      min10S10Note: { html: "<b>Nota de presentación:</b> practicar especialmente las transiciones entre secciones, porque el proyecto tiene una idea central muy potente: no es solo sonificación; es el estudio de la información después de la sonificación." },
+      tecS1Title: "1. Visión general del sistema",
+      tecS1P1: "ARGIRA ↔ RMA es una arquitectura reproducible para estudiar transformaciones cross-modales entre representación visual y representación acústica. El sistema está compuesto por dos elementos principales:",
+      tecS1Li1: { html: "<b>ARGIRA</b>: un pipeline determinista de sonificación visual-acústica." },
+      tecS1Li2: { html: "<b>RMA (Residual Model Auditor)</b>: un framework para auditar qué información estructural permanece después del mapeo." },
+      tecS1P2: "El objetivo no es únicamente generar una salida acústica a partir de una entrada visual, sino analizar la estructura informacional de la transformación. Formalmente:",
+      tecS1Li3: { html: "<code>X</code> = características visuales extraídas de la imagen" },
+      tecS1Li4: { html: "<code>Y</code> = parámetros acústicos generados por ARGIRA" },
+      tecS1P3: "El sistema estudia:",
+      tecS1P4: { html: "y posteriormente analiza si una clase de modelos <code>g(X)</code> puede explicar completamente la relación:" },
+      tecS1P5: "La diferencia:",
+      tecS1P6: "define el residuo que RMA audita.",
+      tecS2Title: "2. Pipeline ARGIRA",
+      tecS2P1: "ARGIRA comienza con una imagen. El sistema extrae características visuales que representan diferentes dimensiones de la obra:",
+      tecS2Li1: "estadísticas de color",
+      tecS2Li2: "distribución cromática",
+      tecS2Li3: "entropía",
+      tecS2Li4: "densidad de bordes",
+      tecS2Li5: "complejidad espacial",
+      tecS2Li6: "dimensión fractal",
+      tecS2Li7: "características derivadas de partición espacial",
+      tecS2P2: "Estas variables entran en el pipeline de sonificación, que las transforma mediante funciones explícitas en parámetros acústicos:",
+      tecS2Li8: "frecuencia base",
+      tecS2Li9: "componentes armónicos",
+      tecS2Li10: "peso de osciladores",
+      tecS2Li11: "modulación",
+      tecS2Li12: "envolvente",
+      tecS2Li13: "tempo",
+      tecS2Li14: "posición espacial",
+      tecS2P3: "La arquitectura mantiene una separación clara entre: datos de entrada, transformaciones, parámetros generados y salida acústica.",
+      tecS3Title: "3. Design Graph",
+      tecS3P1: "El Design Graph representa la estructura computacional del pipeline. No es un grafo conceptual generado manualmente, sino una representación de dependencias extraída del sistema real.",
+      tecS3P2: "Cada nodo representa un elemento del proceso:",
+      tecS3Li1: "feature visual",
+      tecS3Li2: "variable intermedia",
+      tecS3Li3: "parámetro acústico",
+      tecS3Li4: "componente funcional",
+      tecS3P3: "Cada conexión representa una dependencia. Esto permite inspeccionar:",
+      tecS3Li5: "qué entradas producen cada salida",
+      tecS3Li6: "qué variables son centrales",
+      tecS3Li7: "qué parámetros dependen de múltiples fuentes",
+      tecS3Li8: "dónde existen transformaciones directas o derivadas",
+      tecS3P4: "El objetivo es aportar interpretabilidad estructural.",
+      tecS4Title: "4. Sensitivity Evidence",
+      tecS4P1: { html: "Las relaciones del grafo se complementan con evidencia de sensibilidad. La sensibilidad se obtiene mediante perturbaciones controladas: <b>±5% sobre variables de entrada</b>." },
+      tecS4P2: "Se observa cómo cambia la salida acústica ante esas perturbaciones. La intensidad de una conexión no representa únicamente existencia de una relación, sino magnitud de respuesta bajo una perturbación definida. Esto permite distinguir relaciones presentes de relaciones con impacto cuantificable.",
+      tecS5Title: "5. Residual Model Auditor (RMA)",
+      tecS5P1: "RMA evalúa si una hipótesis de modelado captura completamente una transformación. El procedimiento general:",
+      tecS5Li1: { html: "Seleccionar una variable acústica objetivo <code>Y</code>." },
+      tecS5Li2: { html: "Definir variables explicativas <code>X</code>." },
+      tecS5Li3: { html: "Ajustar un modelo <code>g(X)</code>." },
+      tecS5Li4: "Obtener predicciones mediante validación cruzada.",
+      tecS5Li5: "Calcular residuos fuera de muestra.",
+      tecS5Li6: "Evaluar si esos residuos conservan estructura.",
+      tecS5P2: "La utilización de predicciones cross-validation es fundamental porque evita interpretar como información real patrones producidos por ajuste dentro de muestra.",
+      tecS6Title: "6. Residual predictability",
+      tecS6P1: "La métrica central es la capacidad de predecir los residuos.",
+      tecS6Li1: { html: "<span class=\"badge evidence\">sin estructura</span>&nbsp; si <code>R² residual ≈ 0</code> → la información restante no presenta estructura recuperable bajo el modelo utilizado." },
+      tecS6Li2: { html: "<span class=\"badge residual\">predecible</span>&nbsp; si <code>R² residual &gt; 0</code> → existe estructura no explicada." },
+      tecS6P2: "Esto no significa automáticamente que exista un fenómeno nuevo. Significa que existe información que la hipótesis del modelo no captura. La interpretación requiere análisis adicional.",
+      tecS7Title: "7. Separación Evidence / Research / Analysis",
+      tecS7P1: "La arquitectura incorpora una separación explícita entre estados epistemológicos.",
+      tecS7Th1: "Capa",
+      tecS7Th2: "Características",
+      tecS7Td1: "solo lectura · procedencia conocida · no modificable por exploración",
+      tecS7Td2: "generación de preguntas · búsqueda de patrones · no constituye evidencia",
+      tecS7Td3: "resultados locales · reproducibles · no promocionados automáticamente",
+      tecS7P2: "Esta separación evita mezclar exploración con confirmación.",
+      tecS8Title: "8. Arquitectura del Explorer",
+      tecS8P1: "El Explorer es una aplicación HTML autocontenida. Incluye:",
+      tecS8Li1: "interfaz visual",
+      tecS8Li2: "lógica de interacción",
+      tecS8Li3: "corpus embebido",
+      tecS8Li4: "motor estadístico ejecutable mediante Pyodide",
+      tecS8Li5: "sistema de exportación",
+      tecS8P2: "El usuario puede abrir el archivo, inspeccionar la arquitectura, ejecutar análisis y exportar resultados. No requiere infraestructura externa.",
+      tecS8Figcaption: { html: "<b>CAPTURA — vista de arquitectura del Explorer</b>" },
+      tecS8ShotDesc: "Panel técnico mostrando los módulos del sistema: interfaz, corpus, motor Pyodide y exportación.",
+      tecS9Title: "9. Reproducibilidad y trazabilidad",
+      tecS9P1: "El sistema proporciona trazabilidad completa:",
+      tecS9Pipeline: "Imagen\n  ↓\nFeature visual\n  ↓\nFunción ARGIRA\n  ↓\nParámetro acústico\n  ↓\nColumna CSV\n  ↓\nAnálisis RMA\n  ↓\nInforme exportado",
+      tecS9P2: "Cada etapa mantiene una relación explícita con la siguiente. Esto permite auditar no solamente resultados, sino también el camino que los produce.",
+      tecS10Title: "10. Interpretación científica",
+      tecS10P1: "ARGIRA ↔ RMA no intenta afirmar que existe una traducción perfecta entre imagen y sonido. El objetivo es estudiar las propiedades de una transformación cross-modal:",
+      tecS10Li1: "qué información se conserva",
+      tecS10Li2: "qué información desaparece",
+      tecS10Li3: "qué información queda oculta para modelos simples",
+      tecS10Li4: "qué estructuras emergen después del mapeo",
+      tecS10P2: "La contribución metodológica es proporcionar un marco donde una transformación artística pueda ser analizada como un sistema computacional auditable.",
+      tecS10P3: "En ese sentido, ARGIRA ↔ RMA funciona como un puente entre sonificación, análisis estadístico, reproducibilidad científica y auditoría de modelos.",
+      tecS10Note: { html: "<b>Nota:</b> la explicación técnica revela algo que quizá no se nota al mirar el HTML: el verdadero producto no es el archivo. El archivo es el contenedor. El producto intelectual es la <b>arquitectura de auditoría de una transformación visual-acústica</b>." }
+    },
+
+    en: {
+      brandSub: "How to explain the project",
+      tab00: "Overview",
+      tab01: "2 min",
+      tab02: "10 min",
+      tab03: "Technical",
+      tab04: "Master map",
+      tab05: "Explorer Guide",
+
+      heroEyebrow: "An instrument, not a landing page",
+      heroTitle: "What survives when a painting becomes sound",
+      heroLede: "Six ways to tell the same project — from a one-line pitch for someone who knows nothing, to the formal architecture for an ICAD reviewer. All of them describe the same core idea: moving from a black box to an auditable process.",
+      heroFigcaption: "Y = g(X) + R — RMA audits whether R still contains structure",
+
+      resumen1Eyebrow: "The question behind everything",
+      resumen1Quote: "What information from a painting remains when we turn it into a sound experience?",
+      resumen1P1: { html: 'A painting has many measurable properties: color distribution, chromatic variation, spatial complexity, edges, texture, fractal structure, region organization. The <b>ARGIRA</b> pipeline takes those visual features and turns them into acoustic parameters: frequency, timbre, harmonics, modulation, rhythm, spatialization.' },
+      resumen1P2: { html: 'But a deeper scientific question emerges: when an image goes through a visual → acoustic transformation, <b>what part of its structure is still present and can be recovered?</b> That is where RMA comes in.' },
+
+      resumen2Title: "What is RMA?",
+      resumen2P1: { html: '<b>RMA</b> stands for <i>Residual Model Auditor</i>. If we have a transformation:' },
+      resumen2Pipeline1: "Image → ARGIRA → Sound",
+      resumen2P2: "we can build models that try to explain the result:",
+      resumen2Pipeline2: "Visual features → Acoustic parameter",
+      resumen2P3: "The model explains part of it. But a residual remains:",
+      resumen2Formula: "Residual = actual result − explained result",
+      resumen2P4: { html: 'RMA always asks the same question: <b>does the residual still contain structural information?</b>' },
+      resumen2Badge1: "no structure",
+      resumen2Li1: "the model explains the relationship well.",
+      resumen2Badge2: "predictable",
+      resumen2Li2: "there is information the model did not capture.",
+      resumen2P5: "This makes it possible to study the real limitations of the mapping, not just its predictive power.",
+
+      resumen3Title: "The Explorer",
+      resumen3P1: "The self-contained HTML is an interface for exploring this whole system. It is not just a visualization: it is a research layer that connects the pipeline, the data, the evidence, the hypotheses, and the analyses.",
+      resumen3Figcaption: { html: '<b>SCREENSHOT — Explorer welcome screen</b>' },
+      resumen3ShotDesc: "General view of the HTML open in the browser, showing the set of tabs (Network, Inspector, Evidence, Research, Analysis).",
+
+      resumen4Title: "What makes ARGIRA ↔ RMA special?",
+      resumen4P1: { html: 'It is not just <i>"a painting produces a sound"</i> — that would already be a sonification. The deeper question is:' },
+      resumen4Quote: "What structure survives when an artistic representation changes domain?",
+      resumen4P2: "ARGIRA studies the translation. RMA studies the information that remains after that translation. The Explorer brings both together in a single instrument for viewing, analyzing, and auditing the whole process.",
+
+      min2Eyebrow: "For the poster presentation · ICAD 2026",
+      min2Title: "The two-minute version",
+      min2P1: { html: '<b>ARGIRA ↔ RMA</b> is a research instrument that studies what happens when we turn a painting into sound.' },
+      min2P2: "ARGIRA is a sonification pipeline: it extracts visual features from an image — such as color distribution, spatial complexity, edge density, or fractal dimension — and converts them into acoustic parameters, creating a sonic representation of the artwork.",
+      min2P3: "But the main question is not just how to generate a sound from an image. The question is:",
+      min2Quote: "What information from the image remains after that transformation?",
+      min2P4: { html: 'To study this I developed <b>RMA</b>, <i>Residual Model Auditor</i>. RMA analyzes the relationship between the input visual features and the output acoustic parameters, also studying the information left in the models\u2019 residuals. If recoverable structure remains after explaining the mapping, it means there is information the transformation has not fully captured.' },
+      min2P5: "The ARGIRA ↔ RMA Knowledge Explorer brings this whole process together in a self-contained web application. It lets you visualize the dependency network between visual features and acoustic parameters, inspect the provenance of each variable, separate validated evidence from exploratory hypotheses, and run reproducible analyses directly in the browser.",
+      min2Note: { html: '<b>Anchor line for the talk:</b> moving from a <b>black box</b> —an image goes in, a sound comes out— to an <b>auditable process</b> where we can study what is preserved, what is lost, and what new structures may emerge during a translation between domains. This is the conceptual leap from ARGIRA to RMA — worth emphasizing.' },
+      min2P6: "ARGIRA is not just a sonification system. It is a platform for researching the relationship between visual representation, sound, and structural information.",
+      min2Figcaption: { html: '<b>SCREENSHOT — ICAD 2026 poster</b>' },
+      min2ShotDesc: "Photo of the printed poster or its digital version, to go along with this summarized version in the oral presentation.",
+
+      min10Eyebrow: "Extended oral presentation · ICAD 2026",
+      min10Title: "The ten-minute version",
+      min10S1Title: "1. Introduction: the research question",
+      min10S1P1: "ARGIRA starts from a simple but deep question:",
+      min10S1Quote: "What happens to the information in an image when we transform it into sound?",
+      min10S1P2: "A painting contains multiple layers of information: color, spatial distribution, texture, complexity, organization of shapes and patterns. A sonification converts some of those visual features into acoustic parameters.",
+      min10S1P3: "In ARGIRA, an image is not translated into sound arbitrarily. Quantifiable visual features are extracted first, and these then feed a pipeline that generates acoustic parameters: certain color properties, spatial structure, or visual complexity can influence frequency, timbre, rhythm, modulation, or spatialization.",
+      min10S1P4: { html: 'But the more interesting scientific question appears afterwards, once the image has already changed domain: <b>what information remains?</b>' },
+      min10S1Li1: "Does the sound preserve structure from the original image?",
+      min10S1Li2: "Is there information that gets lost?",
+      min10S1Li3: "Are there relationships the initial mapping does not fully explain?",
+      min10S1P5: { html: 'To answer these questions I developed <b>RMA: Residual Model Auditor</b>.' },
+
+      min10S2Title: "2. From visual-acoustic mapping to residual auditing",
+      min10S2P1: "A sonification system can be seen as a function:",
+      min10S2Pipeline1: "Image → ARGIRA → Acoustic parameter",
+      min10S2P2: "We can try to explain that relationship using statistical models. The model learns part of the transformation:",
+      min10S2Pipeline2: "Visual features → Expected acoustic result",
+      min10S2P3: { html: 'But there is always a difference between the observed value and the predicted value. That leftover is the <b>residual</b>. RMA studies precisely that residual — the question is not just <i>"how well does the model predict?"</i>, but something deeper:' },
+      min10S2Quote: "After explaining the main relationship, is there still structured information left?",
+      min10S2Badge1: "no structure",
+      min10S2Li1: " the model adequately captures the relationship.",
+      min10S2Badge2: "predictable",
+      min10S2Li2: " there is information the model is not fully representing.",
+      min10S2P4: "This makes it possible to study the limitations of the mapping, not just its predictive power.",
+
+      min10S3Title: "3. The Knowledge Explorer",
+      min10S3P1: { html: 'To make this process transparent I developed the <b>ARGIRA ↔ RMA Knowledge Explorer</b>: a self-contained web application that runs entirely in the browser. Its goal is not just to show results, but to allow inspection of the entire path from the image to the statistical analysis.' },
+      min10S3P2: "The architecture is divided into three main layers:",
+      min10S3Li1: { html: '<b>Evidence</b> — audited results.' },
+      min10S3Li2: { html: '<b>Research</b> — hypothesis exploration.' },
+      min10S3Li3: { html: '<b>Analysis</b> — reproducible laboratory.' },
+
+      min10S4Title: "4. Evidence: audited results",
+      min10S4P1: "The first layer is Evidence. Here you find only confirmed and audited results — it is a read-only layer.",
+      min10S4P2: "The reason is methodological: an interactive tool can generate many explorations, but an exploration should not automatically become evidence. That is why Evidence remains separate. Confirmed results have a clear identity: we know where they come from, how they were obtained, and what level of validation they have.",
+
+      min10S5Title: "5. Research: hypothesis exploration",
+      min10S5P1: "The second layer is Research. This zone allows formulating new questions, for example:",
+      min10S5Li1: "Is there an unexpected relationship between certain visual features and acoustic parameters?",
+      min10S5Li2: "Do patterns appear that deserve further investigation?",
+      min10S5P2: "But a hypothesis is not evidence. Research allows exploration without contaminating confirmed results: a hypothesis can only move to Evidence after independent validation.",
+
+      min10S6Title: "6. Analysis: the reproducible laboratory",
+      min10S6P1: "The third layer is Analysis. Here the user can run the RMA engine directly, using:",
+      min10S6Li1: "the included corpus of 227 paintings;",
+      min10S6Li2: "or an external dataset provided by the user.",
+      min10S6P2: { html: "The analysis runs locally via <b>Pyodide</b> in the browser. This means the results of an exploration stay within the user's session and do not modify the stored evidence. The tool allows generating reports and exporting results to continue the analysis outside the Explorer." },
+
+      min10S7Title: "7. The dependency network: making the transformation visible",
+      min10S7P1: { html: 'One of the central parts of the Explorer is the <b>Design Graph</b>. This graph represents how a visual feature travels through the pipeline until it becomes an acoustic parameter — for example, a color property can feed a pipeline function, which generates a specific acoustic parameter.' },
+      min10S7P2: "The network allows answering questions such as:",
+      min10S7Li1: "Where does this parameter come from?",
+      min10S7Li2: "Which variables affect it?",
+      min10S7Li3: "Is it a direct or derived relationship?",
+      min10S7Li4: "Is there sensitivity evidence?",
+      min10S7P3: { html: 'The intention is to eliminate the black box. Instead of seeing only <code>image → sound</code>, we can study the whole intermediate path.' },
+      min10S7Figcaption: { html: '<b>SCREENSHOT — Explorer Design Graph</b>' },
+      min10S7ShotDesc: "View of the dependency graph showing the path from a visual feature to the acoustic parameter it generates.",
+
+      min10S8Title: "8. The node inspector: traceability",
+      min10S8P1: "Each element of the graph can be inspected. The system shows:",
+      min10S8Li1: "name",
+      min10S8Li2: "category",
+      min10S8Li3: "unit",
+      min10S8Li4: "range",
+      min10S8Li5: "originating function or module",
+      min10S8Li6: "validation status",
+      min10S8P2: "This turns every variable into a traceable object. We not only know which variable exists, but what role it plays within the system.",
+      min10S9Title: "9. Reproducibility",
+      min10S9P1: "Another fundamental goal was that the work could be inspected by other people. That's why the artifact includes:",
+      min10S9Li1: "the complete application",
+      min10S9Li2: "the corpus dataset",
+      min10S9Li3: "CSV templates",
+      min10S9Li4: "analysis examples",
+      min10S9Li5: "HTML and PDF reports",
+      min10S9Li6: "graph export",
+      min10S9P2: "The main file contains everything needed to explore the system without installing a server or manually rebuilding the environment.",
+      min10S10Title: "10. Final idea",
+      min10S10P1: { html: "ARGIRA began as a painting sonification system. But with RMA it became something different: <b>an instrument for studying what happens when a representation changes domain</b>." },
+      min10S10P2: { html: "The question is no longer just <i>how do you turn an image into sound?</i> The question is:" },
+      min10S10Quote: "What structure, what information, and what relationships survive when an image is transformed into an acoustic experience?",
+      min10S10P3: "The Knowledge Explorer makes that process visible and allows it to be studied in a reproducible, auditable way that is open to new research.",
+      min10S10Note: { html: "<b>Presentation note:</b> practice the transitions between sections especially carefully, because the project has a very powerful central idea: it's not just sonification; it's the study of information after sonification." },
+      tecS1Title: "1. System overview",
+      tecS1P1: "ARGIRA ↔ RMA is a reproducible architecture for studying cross-modal transformations between visual representation and acoustic representation. The system is made up of two main elements:",
+      tecS1Li1: { html: "<b>ARGIRA</b>: a deterministic visual-to-acoustic sonification pipeline." },
+      tecS1Li2: { html: "<b>RMA (Residual Model Auditor)</b>: a framework for auditing which structural information remains after the mapping." },
+      tecS1P2: "The goal is not merely to generate an acoustic output from a visual input, but to analyze the informational structure of the transformation. Formally:",
+      tecS1Li3: { html: "<code>X</code> = visual features extracted from the image" },
+      tecS1Li4: { html: "<code>Y</code> = acoustic parameters generated by ARGIRA" },
+      tecS1P3: "The system studies:",
+      tecS1P4: { html: "and then analyzes whether a class of models <code>g(X)</code> can fully explain the relationship:" },
+      tecS1P5: "The difference:",
+      tecS1P6: "defines the residual that RMA audits.",
+      tecS2Title: "2. ARGIRA pipeline",
+      tecS2P1: "ARGIRA starts with an image. The system extracts visual features that represent different dimensions of the work:",
+      tecS2Li1: "color statistics",
+      tecS2Li2: "chromatic distribution",
+      tecS2Li3: "entropy",
+      tecS2Li4: "edge density",
+      tecS2Li5: "spatial complexity",
+      tecS2Li6: "fractal dimension",
+      tecS2Li7: "features derived from spatial partitioning",
+      tecS2P2: "These variables enter the sonification pipeline, which transforms them through explicit functions into acoustic parameters:",
+      tecS2Li8: "base frequency",
+      tecS2Li9: "harmonic components",
+      tecS2Li10: "oscillator weight",
+      tecS2Li11: "modulation",
+      tecS2Li12: "envelope",
+      tecS2Li13: "tempo",
+      tecS2Li14: "spatial position",
+      tecS2P3: "The architecture maintains a clear separation between: input data, transformations, generated parameters, and acoustic output.",
+      tecS3Title: "3. Design Graph",
+      tecS3P1: "The Design Graph represents the computational structure of the pipeline. It is not a manually generated conceptual graph, but a representation of dependencies extracted from the real system.",
+      tecS3P2: "Each node represents an element of the process:",
+      tecS3Li1: "visual feature",
+      tecS3Li2: "intermediate variable",
+      tecS3Li3: "acoustic parameter",
+      tecS3Li4: "functional component",
+      tecS3P3: "Each connection represents a dependency. This allows inspecting:",
+      tecS3Li5: "which inputs produce each output",
+      tecS3Li6: "which variables are central",
+      tecS3Li7: "which parameters depend on multiple sources",
+      tecS3Li8: "where direct or derived transformations exist",
+      tecS3P4: "The goal is to provide structural interpretability.",
+      tecS4Title: "4. Sensitivity Evidence",
+      tecS4P1: { html: "The graph's relationships are complemented by sensitivity evidence. Sensitivity is obtained through controlled perturbations: <b>±5% over input variables</b>." },
+      tecS4P2: "It is observed how the acoustic output changes in response to these perturbations. The intensity of a connection does not merely represent the existence of a relationship, but the magnitude of the response under a defined perturbation. This makes it possible to distinguish present relationships from relationships with quantifiable impact.",
+      tecS5Title: "5. Residual Model Auditor (RMA)",
+      tecS5P1: "RMA evaluates whether a modeling hypothesis fully captures a transformation. The general procedure:",
+      tecS5Li1: { html: "Select a target acoustic variable <code>Y</code>." },
+      tecS5Li2: { html: "Define explanatory variables <code>X</code>." },
+      tecS5Li3: { html: "Fit a model <code>g(X)</code>." },
+      tecS5Li4: "Obtain predictions through cross-validation.",
+      tecS5Li5: "Compute out-of-sample residuals.",
+      tecS5Li6: "Assess whether those residuals retain structure.",
+      tecS5P2: "Using cross-validation predictions is essential because it avoids interpreting patterns produced by in-sample fitting as real information.",
+      tecS6Title: "6. Residual predictability",
+      tecS6P1: "The core metric is the ability to predict the residuals.",
+      tecS6Li1: { html: "<span class=\"badge evidence\">no structure</span>&nbsp; if <code>R² residual ≈ 0</code> → the remaining information shows no recoverable structure under the model used." },
+      tecS6Li2: { html: "<span class=\"badge residual\">predictable</span>&nbsp; if <code>R² residual &gt; 0</code> → unexplained structure exists." },
+      tecS6P2: "This does not automatically mean a new phenomenon exists. It means there is information that the model's hypothesis does not capture. Interpretation requires further analysis.",
+      tecS7Title: "7. Evidence / Research / Analysis separation",
+      tecS7P1: "The architecture incorporates an explicit separation between epistemological states.",
+      tecS7Th1: "Layer",
+      tecS7Th2: "Characteristics",
+      tecS7Td1: "read-only · known provenance · not modifiable through exploration",
+      tecS7Td2: "question generation · pattern search · does not constitute evidence",
+      tecS7Td3: "local results · reproducible · not automatically promoted",
+      tecS7P2: "This separation prevents mixing exploration with confirmation.",
+      tecS8Title: "8. Explorer architecture",
+      tecS8P1: "The Explorer is a self-contained HTML application. It includes:",
+      tecS8Li1: "visual interface",
+      tecS8Li2: "interaction logic",
+      tecS8Li3: "embedded corpus",
+      tecS8Li4: "statistical engine executable via Pyodide",
+      tecS8Li5: "export system",
+      tecS8P2: "The user can open the file, inspect the architecture, run analyses, and export results. No external infrastructure is required.",
+      tecS8Figcaption: { html: "<b>SCREENSHOT — Explorer architecture view</b>" },
+      tecS8ShotDesc: "Technical panel showing the system's modules: interface, corpus, Pyodide engine, and export.",
+      tecS9Title: "9. Reproducibility and traceability",
+      tecS9P1: "The system provides complete traceability:",
+      tecS9Pipeline: "Image\n  ↓\nVisual feature\n  ↓\nARGIRA function\n  ↓\nAcoustic parameter\n  ↓\nCSV column\n  ↓\nRMA analysis\n  ↓\nExported report",
+      tecS9P2: "Each stage maintains an explicit relationship with the next. This allows auditing not only results, but also the path that produces them.",
+      tecS10Title: "10. Scientific interpretation",
+      tecS10P1: "ARGIRA ↔ RMA does not attempt to claim that a perfect translation between image and sound exists. The goal is to study the properties of a cross-modal transformation:",
+      tecS10Li1: "what information is preserved",
+      tecS10Li2: "what information disappears",
+      tecS10Li3: "what information remains hidden to simple models",
+      tecS10Li4: "what structures emerge after the mapping",
+      tecS10P2: "The methodological contribution is to provide a framework where an artistic transformation can be analyzed as an auditable computational system.",
+      tecS10P3: "In that sense, ARGIRA ↔ RMA works as a bridge between sonification, statistical analysis, scientific reproducibility, and model auditing.",
+      tecS10Note: { html: "<b>Note:</b> the technical explanation reveals something that may not be obvious just from looking at the HTML: the real product is not the file. The file is the container. The intellectual product is the <b>auditing architecture for a visual-acoustic transformation</b>." }
+    }
+  };
+
+  // ---------- translatePage: aplica el diccionario I18N al DOM ----------
+  // Traduce todo elemento con data-i18n="clave" presente en I18N[lang].
+  // Usa textContent salvo que el valor del diccionario sea { html: ... },
+  // en cuyo caso usa innerHTML (solo para los textos que ya llevaban
+  // etiquetas como <b>/<i> en el original).
+  function translatePage(lang){
+    var dict = I18N[lang] || I18N.es;
+
+    document.documentElement.setAttribute('lang', lang === 'en' ? 'en' : 'es');
+
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      var value = dict[key];
+      if (value === undefined) return; // clave sin traducir todavía (fases futuras)
+
+      if (value && typeof value === 'object' && 'html' in value){
+        el.innerHTML = value.html;
+      } else {
+        el.textContent = value;
+      }
+    });
+    // Las etiquetas del botón "Escuchar/Listen" se refrescan en el listener
+    // del evento 'langchange' (más abajo), que ya detiene cualquier lectura
+    // en curso y actualiza el texto de todos los .speak-btn.
+  }
+
+  // ---------- language toggle ----------
+  var langButtons = document.querySelectorAll('.lang-btn');
+  var currentLang = 'es';
+
+  langButtons.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var lang = btn.getAttribute('data-lang');
+      if (lang === currentLang) return;
+      currentLang = lang;
+
+      langButtons.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      translatePage(lang);
+      document.dispatchEvent(new CustomEvent('langchange', { detail: { lang: lang } }));
+    });
+  });
+  // ---------- text-to-speech: botón "Escuchar" por sección ----------
+  var synth = window.speechSynthesis;
+  var currentUtterance = null;
+  var currentBtn = null;
+
+  function stopSpeaking(){
+    if (synth && synth.speaking) synth.cancel();
+    if (currentBtn) currentBtn.classList.remove('speaking');
+    currentBtn = null;
+    currentUtterance = null;
+  }
+
+  function speakLabel(lang){
+    return lang === 'en' ? '🔊 Listen' : '🔊 Escuchar';
+  }
+
+  function stopLabel(lang){
+    return lang === 'en' ? '⏹ Stop' : '⏹ Detener';
+  }
+
+  function getSectionText(section){
+    // clona la sección para no tocar el DOM real y limpia el texto para lectura
+    var clone = section.cloneNode(true);
+    var btn = clone.querySelector('.speak-btn');
+    if (btn) btn.remove();
+    return clone.textContent.replace(/\s+/g, ' ').trim();
+  }
+
+  function initSpeakButtons(){
+    if (!('speechSynthesis' in window)) return; // navegador sin soporte: no se agregan botones
+
+    var sections = document.querySelectorAll('section.block');
+    sections.forEach(function(section){
+      if (section.querySelector('.speak-btn')) return; // ya tiene botón
+
+      var btn = document.createElement('button');
+      btn.className = 'speak-btn';
+      btn.type = 'button';
+      btn.textContent = speakLabel(document.documentElement.getAttribute('lang') || 'es');
+
+      btn.addEventListener('click', function(){
+        var isThisSpeaking = (currentBtn === btn) && synth.speaking;
+
+        // detener cualquier lectura en curso (de esta u otra sección)
+        stopSpeaking();
+
+        if (isThisSpeaking) return; // el clic era solo para detener
+
+        var lang = document.documentElement.getAttribute('lang') || 'es';
+        var text = getSectionText(section);
+        if (!text) return;
+
+        var utter = new SpeechSynthesisUtterance(text);
+        utter.lang = lang === 'en' ? 'en-US' : 'es-ES';
+        utter.rate = 0.98;
+
+        utter.onend = function(){
+          btn.classList.remove('speaking');
+          btn.textContent = speakLabel(lang);
+          if (currentBtn === btn) currentBtn = null;
+        };
+        utter.onerror = function(){
+          btn.classList.remove('speaking');
+          btn.textContent = speakLabel(lang);
+          if (currentBtn === btn) currentBtn = null;
+        };
+
+        currentUtterance = utter;
+        currentBtn = btn;
+        btn.classList.add('speaking');
+        btn.textContent = stopLabel(lang);
+        synth.speak(utter);
+      });
+
+      section.insertBefore(btn, section.firstChild);
+    });
+  }
+
+  // refresca las etiquetas de los botones al cambiar idioma
+  document.addEventListener('langchange', function(e){
+    stopSpeaking();
+    var lang = e.detail.lang;
+    document.querySelectorAll('.speak-btn').forEach(function(btn){
+      btn.textContent = speakLabel(lang);
+    });
+  });
+
+  // detener lectura al cambiar de pestaña
+  tabButtons.forEach(function(btn){
+    btn.addEventListener('click', stopSpeaking);
+  });
+
+  initSpeakButtons();
+})();
+</script>
+
+<!-- ===== PANEL TEMPORAL DE DEPURACIÓN (eliminar tras diagnóstico) ===== -->
+<div id="debug-panel" style="
+  position:fixed; bottom:0; left:0; right:0; max-height:45vh; overflow-y:auto;
+  background:rgba(0,0,0,0.92); color:#0f0; font:11px/1.4 monospace;
+  padding:8px; z-index:999999; border-top:2px solid #0f0; -webkit-overflow-scrolling:touch;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+    <strong style="color:#fff;">DEBUG SCROLL</strong>
+    <button id="debug-clear" style="font:11px monospace; padding:2px 6px;">limpiar</button>
+  </div>
+  <div id="debug-log"></div>
+</div>
+<script>
+(function(){
+  var logEl = document.getElementById('debug-log');
+  var count = 0;
+  window.__dbg = function(msg){
+    count++;
+    var line = document.createElement('div');
+    var scrollYBefore = window.scrollY;
+    line.textContent = '#' + count + ' [' + new Date().toISOString().substr(11,12) + '] ' + msg + ' | scrollY=' + scrollYBefore;
+    logEl.appendChild(line);
+    // autoscroll del panel al último log
+    document.getElementById('debug-panel').scrollTop = document.getElementById('debug-panel').scrollHeight;
+  };
+  document.getElementById('debug-clear').addEventListener('click', function(){
+    logEl.innerHTML = '';
+    count = 0;
+  });
+  window.__dbg('panel de depuración iniciado');
+
+  // === PRUEBA: orden real de eventos sobre .tab-btn (captura) ===
+  ['pointerdown','touchstart','mousedown','focus','click'].forEach(function(ev){
+    document.addEventListener(ev, function(e){
+      var btn = e.target.closest && e.target.closest('.tab-btn');
+      if (btn){
+        window.__dbg('EVENTO(capture)=' + ev + ' targetId=' + btn.getAttribute('data-view'));
+      }
+    }, true);
+  });
+})();
+</script>
+<!-- ===== FIN PANEL TEMPORAL DE DEPURACIÓN ===== -->
+
+</body>
+</html>
